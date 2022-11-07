@@ -1,0 +1,57 @@
+- name: Creating a Webserver
+  become: yes
+  remote_user: ansadmin
+  hosts: webserver
+  tasks:
+  - name: install httpd package
+    yum:
+      name: httpd
+      state: present
+  - name: start service httpd
+    service:
+      name: httpd
+      state: started
+      enabled: yes
+  - name: create a directory
+    file:
+      path: /devweb
+      state: directory
+      mode: 02775
+      setype: httpd_sys_content_t
+  - name: create file
+    file:
+      path: /devweb/index.html
+      state: touch
+  - name: copy the contents
+    copy:
+      content: "Welcome to Hariharan's WebServer page !!!\n"
+      dest: /devweb/index.html
+  - name: link a file
+    file:
+      src: /devweb
+      dest: /var/www/html/devweb
+      state: link
+
+- name: Install nginx package in nginx server
+  become: yes
+  remote_user: ansadmin
+  hosts: nginx
+  tasks:
+  - name: Get the EPEl repo
+    get_url:
+      url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+      dest: /home/ansadmin/epel-release-latest-7.noarch.rpm
+  - name: install EPEL repo
+    yum:
+      name: /home/ansadmin/epel-release-latest-7.noarch.rpm
+      state: present
+  - name: install ngnix package
+    yum:
+      name:
+        - nginx
+      state: present
+  - name: start service nginx
+    service:
+      name: nginx
+      state: started
+      enabled: yes

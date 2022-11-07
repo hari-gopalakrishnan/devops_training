@@ -1,0 +1,12 @@
+- hosts: all
+  become: true
+  vars_files:
+      - user_details.yaml
+  tasks:
+      - name: more complex items to add several users
+        user:
+         name: "{{ item.name }}"
+         uid: "{{ item.uid }}"
+         groups: "{{ item.groups }}"
+         state: present
+        with_items: "{{ user_details }}"

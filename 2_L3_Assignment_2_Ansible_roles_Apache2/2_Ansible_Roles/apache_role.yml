@@ -1,0 +1,6 @@
+# vim apache_role.yml
+---
+- name: apache deploy
+  hosts: all
+  roles:
+    - apache

@@ -1,0 +1,27 @@
+# vim roles/apache/tasks/main.yml 
+
+- name: install httpd package
+  yum:
+    name: 
+      - httpd
+      - firewalld
+    state: present
+- name: start service httpd
+  service:
+    name: httpd
+    state: started
+    enabled: yes
+- name: start service firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+- name: firewall rule
+  firewalld:
+    service: http
+    state: enabled
+    permanent: true
+    immediate: yes
+- template:
+    src: template.j2
+    dest: /var/www/html/index.html

@@ -1,0 +1,24 @@
+apiVersion: "networking.k8s.io/v1"
+kind: "Ingress"
+metadata:
+  name: "lb-ingress"
+spec:
+  ingressClassName: "nginx"
+  rules:
+  - host: "hello-world"
+    http:
+      paths:
+      - path: "/v1"
+        pathType: "Prefix"
+        backend:
+          service:
+            name: "web-1"
+            port:
+              number: 8080
+      - path: "/v2"
+        pathType: "Prefix"
+        backend:
+          service:
+            name: "web-2"
+            port:
+              number: 8080

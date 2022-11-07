@@ -1,0 +1,49 @@
+- name: Developing a webserver
+  hosts: all
+  become: yes
+  remote_user: ansadmin
+  tasks:
+  - block:
+    - name: Install http in all RedHat Servers
+      yum:
+        name: httpd
+        state: present
+    - name: Start HTTPD in RedHat Servers
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+    when: (ansible_facts['distribution'] == "Amazon" and ansible_facts['distribution_major_version'] == "2")
+  - block:
+    - name: Install apache2 in all Ubuntu Servers
+      apt:
+        name: apache2
+        state: present
+    - name: Start apache2 in Ubuntu Servers
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+    when: (ansible_facts['distribution'] == "Ubuntu" and ansible_facts['distribution_major_version'] == "22")
+  - block:
+    - name: create a directory
+      file:
+        path: /devweb
+        state: directory
+        group: ansadmin
+        mode: 02775
+        setype: httpd_sys_content_t
+    - name: create file
+      file:
+        path: /devweb/index.html
+        state: touch
+    - name: copy the contents
+      copy:
+        content: "Welcome to Devops Training Session\n"
+        dest: /devweb/index.html
+    - name: link a file
+      file:
+        src: /devweb
+        dest: /var/www/html/devweb
+        state: link
+    when: (ansible_facts['distribution'] == "Amazon") or (ansible_facts['distribution'] == "Ubuntu")
